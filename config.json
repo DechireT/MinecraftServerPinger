@@ -1,0 +1,43 @@
+{
+    "name": "Hypixel",
+    "ip": "play.hypixel.net", 
+    "port": "25565",
+    "token": "OTM0MTEyNjY4MTU4MTU2ODEw.YerWNw.7_FvF_7EpJ7TwtfM-GmQKLFJ2O4",
+    "embed": {
+        "title": "title",
+        "color": "#0099ff",
+        "description": [
+            "🎉 Welcome to ${server_name} 🎉\n",
+            "\n",
+            "${motd_1}\n",
+            "${motd_2}\n",
+            "\n",
+            "🟢 Online players : ${online_players}/${max_players}\n",
+            "\n",
+            "Version : ${server_version}\n",
+            "\n",
+            "📡 Server Ping: ${server_latency} ms 📡\n",
+            "🤖 Bot latency: ${bot_latency} ms\n",
+            "Discord API latency: ${discordapi_latency} ms\n",
+            "Minecraft API latency: ${minecraftapi_latency} ms\n"
+        ]
+    },
+    "enable_menu": true,
+    "menu": {
+        "title": "Select a Minecraft server !",
+        "servers": [
+            {
+                "name": "Hypixel",
+                "ip": "play.hypixel.net"
+            },
+            {
+                "name": "PvP Land",
+                "ip": "pvp.land"
+            },
+            {
+                "name": "Funcraft",
+                "ip": "funcraft.net"
+            }
+        ]
+    }  
+}
