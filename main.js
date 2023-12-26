@@ -43,40 +43,46 @@ client.on('interactionCreate', async interaction => {
 
                 // reset the timer
                 startTime = Date.now();
-
+                
                 // get minecraft server ping informations
-                axios.get("https://api.minetools.eu/ping/" + config.ip + "/" + config.port, { timeout: 5000 })
+                axios.get("https://minecraft-api.com/api/ping/" + config.ip + "/" + config.port, { timeout: config.timeout })
                 .then(async function (response) {
                     // format the json response
                     const json = response.data;
+
+                    var pingEmbed = null;
+                    var message = null;
+                    var pingMenu = null;
                     
                     // set the minecraft api (api.minetools.eu) latency time
                     const minecraft_api_latency = Date.now() - startTime;
 
-                    // make discord embed
-                    const pingEmbed = new MessageEmbed()
-                        .setColor(config.embed.color)
-                        .setTitle(config.embed.title)
+                    if(config.message.embed == true) {
+                        // make discord embed
+                        pingEmbed = new MessageEmbed()
+                        .setColor(config.message.color)
+                        .setTitle(config.message.title)
                         .setDescription(getDescription(json, bot_latency, minecraft_api_latency))
                         .setTimestamp();
+                    } else {
+                        // make message
+                        message = "**" + config.message.title + "**\n\n" + getDescription(json, bot_latency, minecraft_api_latency);
+                    }
 
                     // if the menu is enabled in the config
                     if(config.enable_menu == true) {
 
                         // make the discord drop down menu
-                        const pingMenu = new MessageActionRow()
+                        pingMenu = new MessageActionRow()
                         .addComponents(
                             new MessageSelectMenu()
                                 .setCustomId('servers')
                                 .setPlaceholder(config.menu.title)
                                 .addOptions(getServersList(interaction)),
                         );
-                    
-                    // reply the the message (edit the defer message)
-                        await interaction.editReply({components: [pingMenu], embeds: [pingEmbed] });
-                    } else {
-                        await interaction.editReply({ embeds: [pingEmbed] });
                     }
+                    // reply the the message (edit the defer message)
+                    sendReply(interaction, pingEmbed, message, pingMenu);
                 });
 
             // if there is an error send an error embed
@@ -95,19 +101,26 @@ client.on('interactionCreate', async interaction => {
             await interaction.deferReply({ ephemeral: true });
 
             // get minecraft server ping informations
-            axios.get("https://api.minetools.eu/ping/" + interaction.values[0] + "/" + config.port, { timeout: 2000 })
+            axios.get("https://minecraft-api.com/api/ping/" + interaction.values[0] + "/" + config.port, { timeout: config.timeout })
             .then(async function (response) {
                 // format the json response
                 const json = response.data;
 
-                const pingEmbed = new MessageEmbed()
-                    .setColor(config.embed.color)
-                    .setTitle(config.embed.title)
+                if(config.message.embed == true) {
+                    const pingEmbed = new MessageEmbed()
+                    .setColor(config.message.color)
+                    .setTitle(config.message.title)
                     .setDescription(getDescription(json))
                     .setTimestamp();
 
-                // reply the the message (edit the defer message)
-                await interaction.editReply({ embeds: [pingEmbed], ephemeral: true });
+                    // reply the the message (edit the defer message)
+                    await interaction.editReply({ embeds: [pingEmbed], ephemeral: true });
+                } else {
+                    const message = "**" + config.message.title + "**\n\n" + getDescription(json);
+
+                    // reply the the message (edit the defer message)
+                    await interaction.editReply({ content: message, ephemeral: true });
+                }
 
             // if there is an error send an error embed
             }).catch(async function (error) {
@@ -128,11 +141,28 @@ client.on('interactionCreate', async interaction => {
     }
 });
 
+// reply the message
+async function sendReply(interaction, pingEmbed, message, pingMenu) {
+    if(pingMenu != null) {
+        if(pingEmbed != null) {
+            await interaction.editReply({ components: [pingMenu], embeds: [pingEmbed] });
+        } else {
+            await interaction.editReply({ components: [pingMenu], content: message });
+        }
+    } else {
+        if(pingEmbed != null) {
+            await interaction.editReply({ embeds: [pingEmbed] });
+        } else {
+            await interaction.editReply({ content: message });
+        }
+    }
+}
+
 // format the embed description with the config (and other parameters)
 function getDescription(json, bot_latency, minecraft_api_latency) {
     var description = "";
-    for (let i = 0; i < config.embed.description.length; i++) {
-        description += config.embed.description[i];
+    for (let i = 0; i < config.message.description.length; i++) {
+        description += config.message.description[i];
     } 
 
     return description.replace("${server_name}", config.name).replace("${motd_1}", getMOTD(json)[0]).replace("${motd_2}", getMOTD(json)[1])

@@ -1,9 +1,11 @@
 {
     "name": "Hypixel",
-    "ip": "play.hypixel.net", 
+    "ip": "play.hyixel.net", 
     "port": "25565",
-    "token": "tH3-T0k3N",
-    "embed": {
+    "token": "OTA5MzgwMzIzNTcyMzI2NDQw.YZDcbA.e_ns0Cc1RzEF3POPgiYVSYMt31I",
+    "timeout": 5000,
+    "message": {
+        "embed": false,
         "title": "title",
         "color": "#0099ff",
         "description": [
